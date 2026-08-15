@@ -45,8 +45,10 @@ export default function TokenApp() {
       <main className="mx-auto w-full max-w-lg space-y-6" id="main">
         <p className="wordmark text-[1.1rem] text-paper">$TARS</p>
         <p className="text-[0.9rem] leading-relaxed text-paper/90">
-          Ticker for the companion unit. Contract address will be published here when it exists.
-          No market cap. No holders. No volume. No invented supply. No exchange list.
+          Elon said Tesla should build TARS. We decided to start with the intelligence.
+        </p>
+        <p className="text-[0.9rem] leading-relaxed text-paper/80">
+          A real AI companion. Contract when it exists. No invented mcap, holders, or volume.
         </p>
         <p className="text-[0.72rem] tracking-[0.18em] text-mute">CONTRACT</p>
         <p className="break-all border border-white/10 px-3 py-3 text-[0.85rem]">{cfg.ca}</p>

@@ -327,7 +327,7 @@ export default function CompanionApp() {
     s.setMachine("IDLE");
     mech.clunk();
     if (s.settings.ambient && s.settings.sound) mech.ambientStart();
-    const line = s.hasMet ? "Welcome back." : "Online. I don't believe we've met.";
+    const line = s.hasMet ? "Welcome back." : "Online. We started with the intelligence.";
     s.markMet();
     speak(line);
     lineRef.current?.focus();
@@ -426,7 +426,7 @@ export default function CompanionApp() {
             )}
             {!youText && store.phase === "companion" && (
               <p className="intro-line mx-auto mb-1.5 max-w-2xl text-center text-[0.62rem] tracking-[0.16em] text-mute">
-                Four slabs. A voice.
+                We're building TARS as a real AI companion.
               </p>
             )}
             {youText && (

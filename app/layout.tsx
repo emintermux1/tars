@@ -11,7 +11,7 @@ const ibm = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: "TARS — AI Companion",
-  description: "TARS interactive companion by Rs61 Ahmet. Four slabs. A voice. $TARS.",
+  description: "Elon said Tesla should build TARS. We started with the intelligence. A real AI companion. $TARS",
   robots: { index: true, follow: true },
   icons: { icon: "/favicon.svg" },
 };
