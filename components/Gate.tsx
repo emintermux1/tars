@@ -8,7 +8,7 @@ export default function Gate({ onInit }: { onInit: () => void }) {
       <TarsCss compact />
       <div className="text-center space-y-2">
         <p className="wordmark text-[1.35rem] text-paper">TARS</p>
-        <p className="text-[0.62rem] tracking-[0.36em] text-mute">AI COMPANION</p>
+        <p className="text-[0.78rem] font-medium tracking-[0.32em] text-amber">AI COMPANION</p>
       </div>
       <button type="button" className="metal-btn min-w-[260px]" onClick={onInit}>
         ENTER TARS
