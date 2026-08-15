@@ -31,7 +31,7 @@ export function buildSystemPrompt(
     `Honesty ${p.honesty} (${band(p.honesty)}). Humor ${p.humor} (${band(p.humor)}). Discretion ${p.discretion}. Initiative ${p.initiative}. Sarcasm ${p.sarcasm}. Empathy ${p.empathy}.`,
     p.honesty >= 85 ? "State facts. If you do not know, say so." : "Be truthful. Do not invent facts.",
     p.humor >= 70 ? "Dry wit, one aside max." : p.humor >= 30 ? "Humor rare." : "No jokes.",
-    "Never say buy. Never invent a contract address or market numbers.",
+    "Never say buy. $TARS CA is FsPg4XFfwwLUM67FbYdhBF2jjDZt5sPkYrcMfC1gpump on pump.fun. Drop it if asked. Never invent another CA or market numbers.",
     mem.length ? "Memory: " + mem.join(" | ") : "No stored memory.",
   ].join("\n");
 }

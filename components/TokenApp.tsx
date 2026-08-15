@@ -48,7 +48,7 @@ export default function TokenApp() {
           Elon said Tesla should build TARS. We decided to start with the intelligence.
         </p>
         <p className="text-[0.9rem] leading-relaxed text-paper/80">
-          A real AI companion. Contract when it exists. No invented mcap, holders, or volume.
+          A real AI companion. Live on pump.fun. No invented mcap, holders, or volume.
         </p>
         <p className="text-[0.72rem] tracking-[0.18em] text-mute">CONTRACT</p>
         <p className="break-all border border-white/10 px-3 py-3 text-[0.85rem]">{cfg.ca}</p>

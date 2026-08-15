@@ -1,5 +1,9 @@
 /** Instant local lines. No model. Safe on client and edge. */
 
+const TARS_CA = "FsPg4XFfwwLUM67FbYdhBF2jjDZt5sPkYrcMfC1gpump";
+const CA_ASK =
+  /^(ca|contract|contract address|ticker|\$tars|tars ca|cüzdan degil ca|adres)$/i;
+
 const GREET =
   /^(hi|hey|hello|yo|sup|howdy|hiya|hola|selam|merhaba|naber|nasilsin|nasılsın|sa|slm|selamun aleykum|what's up|whats up|wassup|what up)(\s+(kanka|bro|there|man|dude|tars|la|lan|abi))?$/i;
 
@@ -38,6 +42,9 @@ export function localFastReply(message: string): string | null {
   if (!t || t.length > 48) return null;
   const f = fold(t);
   if (ANSWER.test(t) || ANSWER.test(f)) return "Copy. I'm listening.";
+  if (CA_ASK.test(t) || CA_ASK.test(f) || /\bca\b|contract|\$tars/i.test(f)) {
+    if (f.length <= 24) return `$TARS ${TARS_CA}`;
+  }
   if (GREET.test(t) || GREET.test(f)) return "Here. What do you need.";
   if (WHO.test(t) || WHO.test(f)) return "TARS. Four slabs. A voice.";
   if (PING.test(t) || PING.test(f)) return "Online.";
