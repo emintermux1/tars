@@ -8,7 +8,7 @@ import HUD from "./HUD";
 import SettingsDrawer from "./SettingsDrawer";
 import { useCompanion } from "@/lib/store";
 import { mech } from "@/lib/audio";
-import { cancelSpeech, makeRecognizer, primeSpeech, speakLine } from "@/lib/voice";
+import { cancelSpeech, makeRecognizer, micErrorLine, primeMic, primeSpeech, speakLine } from "@/lib/voice";
 import { localEaster, sliderComment } from "@/lib/easter";
 import { localFastReply, pickOpener } from "@/lib/instant";
 import type { Personality } from "@/lib/types";
@@ -66,6 +66,11 @@ export default function CompanionApp() {
         if (useCompanion.getState().machine === "LISTENING") {
           useCompanion.getState().setMachine("IDLE");
         }
+      },
+      (code) => {
+        const s = useCompanion.getState();
+        s.setSubtitle(micErrorLine(code));
+        s.setMachine("IDLE");
       }
     );
     recRef.current = rec;
@@ -273,9 +278,12 @@ export default function CompanionApp() {
 
   function toggleMic() {
     const rec = recRef.current;
-    if (!rec) return;
     const s = useCompanion.getState();
     s.touch();
+    if (!rec) {
+      s.setSubtitle(micErrorLine("unsupported"));
+      return;
+    }
     if (micOn) {
       rec.stop();
       setMicOn(false);
@@ -287,9 +295,12 @@ export default function CompanionApp() {
       rec.start();
       setMicOn(true);
       s.setMachine("LISTENING");
+      s.setSubtitle("Listening.");
       mech.servo();
     } catch {
       setMicOn(false);
+      s.setSubtitle(micErrorLine("failed"));
+      s.setMachine("IDLE");
     }
   }
 
@@ -335,6 +346,7 @@ export default function CompanionApp() {
   function onInit() {
     mech.unlock();
     primeSpeech();
+    primeMic();
     mech.click();
     warmLink();
     void runBoot();
@@ -430,7 +442,7 @@ export default function CompanionApp() {
               </div>
             )}
             <form onSubmit={onSubmit} className="composer">
-              {hasMic && (
+              {(
                 <button
                   type="button"
                   className={`composer-mic icon-btn ${micOn ? "live" : ""}`}

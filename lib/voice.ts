@@ -93,27 +93,105 @@ type RecogCtor = new () => {
   lang: string;
   interimResults: boolean;
   continuous: boolean;
+  maxAlternatives?: number;
   onresult: ((ev: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
   onend: (() => void) | null;
-  onerror: (() => void) | null;
+  onerror: ((ev: { error?: string }) => void) | null;
   start: () => void;
   stop: () => void;
   abort: () => void;
 };
 
-export function makeRecognizer(onResult: (text: string) => void, onEnd: () => void): Recog | null {
+function speechCtor(): RecogCtor | null {
   const w = window as unknown as { SpeechRecognition?: RecogCtor; webkitSpeechRecognition?: RecogCtor };
-  const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
+  return w.SpeechRecognition || w.webkitSpeechRecognition || null;
+}
+
+export function hasSpeechRec(): boolean {
+  return Boolean(speechCtor());
+}
+
+/** Ask for the mic during a tap (ENTER TARS). iOS will not grant it later. */
+export function primeMic() {
+  const md = navigator.mediaDevices;
+  if (!md?.getUserMedia) return;
+  void md.getUserMedia({ audio: true }).then((stream) => {
+    stream.getTracks().forEach((t) => t.stop());
+  }).catch(() => {});
+}
+
+export function micErrorLine(code?: string): string {
+  switch (code) {
+    case "not-allowed":
+    case "service-not-allowed":
+      return "Mic blocked. Allow microphone for this site.";
+    case "no-speech":
+      return "I heard nothing. Tap MIC and speak.";
+    case "audio-capture":
+      return "No microphone on this device.";
+    case "network":
+      return "Speech link dropped. Type it.";
+    case "unsupported":
+      return "This browser has no speech input. Type it.";
+    default:
+      return "Mic failed. Type it.";
+  }
+}
+
+export function makeRecognizer(
+  onResult: (text: string) => void,
+  onEnd: () => void,
+  onError?: (code: string) => void
+): Recog | null {
+  const SR = speechCtor();
   if (!SR) return null;
-  const rec = new SR();
-  rec.lang = "en-US";
-  rec.interimResults = false;
-  rec.continuous = false;
-  rec.onresult = (ev) => {
-    const said = ev.results[0]?.[0]?.transcript;
-    if (said) onResult(said);
+  let rec: InstanceType<RecogCtor> | null = null;
+  let pending = "";
+  let sent = false;
+  const lang = "tr-TR";
+  const flush = () => {
+    const said = pending.trim();
+    pending = "";
+    if (said && !sent) {
+      sent = true;
+      onResult(said);
+    }
   };
-  rec.onend = onEnd;
-  rec.onerror = onEnd;
-  return rec;
+  const bind = (r: InstanceType<RecogCtor>) => {
+    r.lang = lang;
+    r.interimResults = true;
+    r.continuous = false;
+    if (r.maxAlternatives != null) r.maxAlternatives = 1;
+    r.onresult = (ev) => {
+      const last = ev.results[ev.results.length - 1];
+      const said = last?.[0]?.transcript?.trim();
+      if (!said) return;
+      pending = said;
+      if ((last as { isFinal?: boolean }).isFinal) flush();
+    };
+    r.onend = () => {
+      flush();
+      onEnd();
+    };
+    r.onerror = (ev) => {
+      onError?.(ev.error || "failed");
+      onEnd();
+    };
+  };
+  return {
+    start: () => {
+      try { rec?.abort(); } catch { /* ignore */ }
+      pending = "";
+      sent = false;
+      rec = new SR();
+      bind(rec);
+      rec.start();
+    },
+    stop: () => {
+      try { rec?.stop(); } catch { /* ignore */ }
+    },
+    abort: () => {
+      try { rec?.abort(); } catch { /* ignore */ }
+    },
+  };
 }
